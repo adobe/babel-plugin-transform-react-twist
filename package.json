@@ -1,0 +1,31 @@
+{
+  "name": "@twist/babel-plugin-transform-react",
+  "version": "0.1.0",
+  "author": "Adobe Systems Inc.",
+  "license": "Apache-2.0",
+  "description": "Transformations for Twist enhancements to React",
+  "main": "src/index.js",
+  "scripts": {
+    "linter": "eslint --ext .js,.jsx .",
+    "updateKnownGoods": "UPDATE_KNOWN_GOODS=1 npm test",
+    "test-unit": "mocha -r babel-core/register test/unit/**/*.jsx",
+    "test-fixtures": "mocha test/**/*.js",
+    "test": "npm run test-unit && npm run test-fixtures"
+  },
+  "dependencies": {
+    "@twist/babel-plugin-transform": "adobe/babel-plugin-transform-twist",
+    "babel-core": "^6.26.0",
+    "babel-template": "^6.26.0",
+    "babel-types": "^6.26.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "7.2.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "4.3.0",
+    "eslint-plugin-babel": "4.1.2",
+    "mocha": "^4.0.1",
+    "react": "^16.0.0",
+    "react-test-renderer": "^16.0.0"
+  }
+}
