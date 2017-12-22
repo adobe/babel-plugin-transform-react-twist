@@ -25,7 +25,7 @@ module.exports = class ConstructorPropsTransform {
         }
 
         // Abort if this class isn't decorated with @Component.
-        const classDeclaration = PathUtils.findParentComponent(path);
+        const classDeclaration = PathUtils.findParentClassWithDecorator(path, 'Component');
         if (!classDeclaration) {
             return;
         }
