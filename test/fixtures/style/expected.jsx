@@ -1,60 +1,35 @@
-function _styleTransform(mainValue, ...subValues) {
-    function camelCase(str) {
-        return str.replace(/-+([^-]?)/g, function(match, x) {
-            return x.toUpperCase();
-        });
-    }
+var _S = _interopRequireDefault(require('@twist/babel-plugin-transform-react/src/runtime/styles')).default;
 
-    var key;
-    var resultObject = {};
-
-    if (typeof mainValue === 'string') {
-        mainValue.split(';').forEach(function(item) {
-            const kv = item.split(':', 2);
-
-            if (kv.length === 2) {
-                resultObject[camelCase(kv[0].trim())] = kv[1].trim();
-            }
-        });
-    } else if (mainValue) {
-        for (key in mainValue) {
-            resultObject[camelCase(key)] = mainValue[key];
-        }
-    }
-
-    for (let i = 0; i < subValues.length; i++) {
-        for (key in subValues[i]) {
-            resultObject[camelCase(key)] = subValues[i][key];
-        }
-    }
-
-    return resultObject;
+function _interopRequireDefault(obj) {
+    return (obj && obj.__esModule ? obj : {
+        default: obj
+    });
 }
 
 <div>
     <div
-        style={_styleTransform({
+        style={_S({
             'fontSize': 32,
             'fontWeight': "bold"
         })} />
     <div
-        style={_styleTransform({ color: 'white' }, {
+        style={_S({ color: 'white' }, {
             'color': "red"
         })} />
     <div
-        style={_styleTransform({
+        style={_S({
             'color': 'white',
             'fontWeight': "bold"
         })} />
-    <div style={_styleTransform('some: string')} />
+    <div style={_S('some: string')} />
     <div
-        style={_styleTransform({ color: 'white' }, {
+        style={_S({ color: 'white' }, {
             'fontWeight': someJsExpression
         })} />
     <div { ...spreadArrayRemainsUnchanged } />
     <div
         { ...spreadArray }
-        style={_styleTransform({ color: 'white' }, {
+        style={_S({ color: 'white' }, {
             'fontWeight': someJsExpression
         }, spreadArray.style || {})} />
 </div>
