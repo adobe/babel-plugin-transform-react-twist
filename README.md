@@ -169,7 +169,28 @@ Note that this is really just a naming convention - when you modify an `@Attribu
 
 ### Named Children
 
-TODO
+It is sometimes useful for components to have groups of children that the parent component can render independently,
+such as large blocks of content, headers, footers, etc. For instance:
+
+```jsx
+<Dialog>
+    <dialog:header as={ title }><h1>Header { title }</h1></dialog:header>
+    Contents
+    <dialog:footer><div>Footer</div></dialog:footer>
+</Dialog>
+```
+
+To make that possible, we pass any namespaced children along as attributes. The code above is equivalent to the following
+pure React code:
+
+```jsx
+<Dialog dialog_header={ title => <h1>Header { title }</h1> } dialog_footer={ <div>Footer</div> } >
+    Contents
+</Dialog>
+```
+
+While these children are exposed as React props, we also expose a more convenient `renderChildren()` API that also supports
+passing arguments to named children. See the react-twist docs for more information.
 
 ### Performance Optimizations
 
