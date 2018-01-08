@@ -2,8 +2,9 @@
   "name": "@twist/babel-plugin-transform-react",
   "version": "0.1.0",
   "author": "Adobe Systems Inc.",
-  "license": "Apache-2.0",
   "description": "Transformations for Twist enhancements to React",
+  "repository": "https://github.com/adobe/babel-plugin-transform-react-twist",
+  "license": "Apache-2.0",
   "main": "src/index.js",
   "scripts": {
     "linter": "eslint --ext .js,.jsx .",
