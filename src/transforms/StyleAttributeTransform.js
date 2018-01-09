@@ -14,9 +14,10 @@
 const PathUtils = require('@twist/babel-plugin-transform/src/PathUtils');
 const t = require('babel-types');
 const camelCaseHyphens = require('@twist/babel-plugin-transform/src/camelCaseHyphens');
+const styles = require('../runtime/styles');
 
 module.exports = class StyleAttributeTransform {
-    static apply(path) {
+    static apply(path, state) {
         let attr = PathUtils.getAttribute(path, 'style');
 
         // If the user provided a string `style` attribute, parse out the individual properties now. Otherwise,
@@ -25,7 +26,7 @@ module.exports = class StyleAttributeTransform {
         const subValues = [];
         if (attr) {
             if (t.isStringLiteral(attr.value)) {
-                let obj = this.runtimeTransform(attr.value.value, null);
+                let obj = styles(attr.value.value, null);
                 for (let key in obj) {
                     subValues.push(t.objectProperty(t.stringLiteral(key), t.stringLiteral(obj[key].trim())));
                 }
@@ -90,38 +91,8 @@ module.exports = class StyleAttributeTransform {
         // because React does not support passing a string to the style attribute, and some users
         // use style={`some: string`}.
         // TODO: We can be cleverer, and use a template string expression as a special case to avoid the runtime transform.
-        const runtimeTransformName = PathUtils.addGlobalOnce(path, 'styleTransform', this.runtimeTransform);
+        const runtimeTransformName = PathUtils.addImportOnce(path,
+            'default', `${state.opts.moduleName}/src/runtime/styles`, { nameHint: 'S' });
         attr.value = t.jSXExpressionContainer(t.callExpression(runtimeTransformName, stylesToCombine));
-    }
-
-    static runtimeTransform(mainValue, ...subValues) {
-        function camelCase(str) {
-            return str.replace(/-+([^-]?)/g, function(match, x) {
-                return x.toUpperCase();
-            });
-        }
-
-        var key;
-        var resultObject = {};
-        if (typeof mainValue === 'string') {
-            mainValue.split(';').forEach(function(item) {
-                const kv = item.split(':', 2);
-                if (kv.length === 2) {
-                    resultObject[camelCase(kv[0].trim())] = kv[1].trim();
-                }
-            });
-        }
-        else if (mainValue) {
-            for (key in mainValue) {
-                resultObject[camelCase(key)] = mainValue[key];
-            }
-        }
-        // XXX: We can't use Object.assign() here because another babel plugin tries to optimize it out.
-        for (let i = 0; i < subValues.length; i++) {
-            for (key in subValues[i]) {
-                resultObject[camelCase(key)] = subValues[i][key];
-            }
-        }
-        return resultObject;
     }
 };
