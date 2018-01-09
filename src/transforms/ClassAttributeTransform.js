@@ -15,7 +15,7 @@ const t = require('babel-types');
 const PathUtils = require('@twist/babel-plugin-transform/src/PathUtils');
 
 module.exports = class ClassAttributeTransform {
-    static apply(path) {
+    static apply(path, state) {
         const attributes = path.node.openingElement.attributes;
         const classExpressions = [];
         let numSpreads = 0;
@@ -43,30 +43,11 @@ module.exports = class ClassAttributeTransform {
         }
 
         if (classExpressions.length && !(classExpressions.length === 1 && numSpreads === 1)) {
-            const runtimeTransformName = PathUtils.addGlobalOnce(path, 'classAttributeTransform', this.runtimeTransform);
+            const runtimeTransformName = PathUtils.addImportOnce(path,
+                'default', `${state.opts.moduleName}/src/runtime/classes`, { nameHint: 'C' });
             attributes.push(t.jSXAttribute(t.jSXIdentifier('className'),
                 t.jSXExpressionContainer(t.callExpression(runtimeTransformName, [ t.arrayExpression(classExpressions) ]))));
         }
     }
 
-    static runtimeTransform(expressions) {
-        var classes = [], expr, key;
-        for (var i = 0, len = expressions.length; i < len; i++) {
-            expr = expressions[i];
-            if (Array.isArray(expr)) {
-                classes = classes.concat(expr);
-            }
-            else if (typeof expr === 'string') {
-                classes.push(expr);
-            }
-            else {
-                for (key in expr) {
-                    if (expr[key]) {
-                        classes.push(key);
-                    }
-                }
-            }
-        }
-        return classes.filter(Boolean).join(' ');
-    }
 };

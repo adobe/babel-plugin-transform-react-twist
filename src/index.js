@@ -33,7 +33,8 @@ const OPTIONS = {
     asAttribute: true,
     bindAttribute: true,
     arrowLifting: true,
-    autoImport: {}
+    autoImport: {},
+    moduleName: '@twist/babel-plugin-transform-react',
 };
 
 function normalizeOptions(opts = {}) {
