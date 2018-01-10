@@ -9,8 +9,8 @@
   "scripts": {
     "linter": "eslint --ext .js,.jsx .",
     "updateKnownGoods": "UPDATE_KNOWN_GOODS=1 npm test",
-    "test-unit": "mocha -r babel-core/register test/unit/**/*.jsx",
-    "test-fixtures": "mocha test/**/*.js",
+    "test-unit": "nyc mocha -r babel-core/register test/unit/**/*.jsx",
+    "test-fixtures": "nyc mocha test/**/*.js",
     "test": "npm run test-unit && npm run test-fixtures"
   },
   "dependencies": {
@@ -26,6 +26,7 @@
     "eslint": "4.3.0",
     "eslint-plugin-babel": "4.1.2",
     "mocha": "^4.0.1",
+    "nyc": "^11.4.1",
     "react": "^16.0.0",
     "react-test-renderer": "^16.0.0"
   }
