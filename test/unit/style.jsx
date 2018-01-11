@@ -62,4 +62,22 @@ describe('style', () => {
         <div style={{ fontSize: '10px' }} style-font-size={300} style-font-weight="bold" />,
         { fontSize: 300, fontWeight: 'bold' });
 
+    let s1 = { fontSize: '10px' };
+    let s2 = { fontWeight: 'bold' };
+    testStyle(
+        'merging object properties at runtime',
+        <div style={s1} style={s2} />,
+        { fontSize: '10px', fontWeight: 'bold' });
+
+    let s3 = 'font-size: 10px';
+    let s4 = 'font-weight: bold';
+    testStyle(
+        'merging string properties at runtime',
+        <div style={s3} style={s4} />,
+        { fontSize: '10px', fontWeight: 'bold' });
+
+    testStyle(
+        'merging properties',
+        <div style={{ fontSize: '10px' }} style={{ fontWeight: 'bold' }} />,
+        { fontSize: '10px', fontWeight: 'bold' });
 });

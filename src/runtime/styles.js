@@ -11,33 +11,37 @@
  *
  */
 
-module.exports = function styles(mainValue, ...subValues) {
-    function camelCase(str) {
-        return str.replace(/-+([^-]?)/g, function(match, x) {
-            return x.toUpperCase();
-        });
-    }
+function camelCase(str) {
+    return str.replace(/-+([^-]?)/g, function(match, x) {
+        return x.toUpperCase();
+    });
+}
 
-    var key;
-    var resultObject = {};
-    if (typeof mainValue === 'string') {
-        mainValue.split(';').forEach(function(item) {
+function mergeStyleIntoObject(value, obj) {
+    if (typeof value === 'string') {
+        value.split(';').forEach(function(item) {
             const kv = item.split(':', 2);
             if (kv.length === 2) {
-                resultObject[camelCase(kv[0].trim())] = kv[1].trim();
+                obj[camelCase(kv[0].trim())] = kv[1].trim();
             }
         });
     }
-    else if (mainValue) {
-        for (key in mainValue) {
-            resultObject[camelCase(key)] = mainValue[key];
+    else if (value) {
+        for (let key in value) {
+            obj[camelCase(key)] = value[key];
         }
     }
-    // XXX: We can't use Object.assign() here because another babel plugin tries to optimize it out.
-    for (let i = 0; i < subValues.length; i++) {
-        for (key in subValues[i]) {
-            resultObject[camelCase(key)] = subValues[i][key];
-        }
+}
+
+/**
+ * Merge all arguments into one style object. Strings are converted to style objects; object keys are camelCased.
+ * @param {...string|object} values
+ * @return {object}
+ */
+module.exports = function styles(...values) {
+    let resultObject = {};
+    for (let i = 0, len = values.length; i < len; i++) {
+        mergeStyleIntoObject(values[i], resultObject);
     }
     return resultObject;
 };
