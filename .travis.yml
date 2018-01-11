@@ -2,17 +2,9 @@ language: node_js
 node_js:
   - '8'
 
-addons:
-  firefox: latest
-
 cache:
-  directories:
-    - $HOME/.npm
-
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  yarn: true
 
 script:
-  - npm run linter
-  - npm run test
+  - yarn run linter
+  - yarn run test
