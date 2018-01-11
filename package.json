@@ -11,7 +11,9 @@
     "updateKnownGoods": "UPDATE_KNOWN_GOODS=1 npm test",
     "test-unit": "nyc mocha -r babel-core/register test/unit/**/*.jsx",
     "test-fixtures": "nyc mocha test/**/*.js",
-    "test": "npm run test-unit && npm run test-fixtures"
+    "test": "npm run test-unit && npm run test-fixtures",
+    "preversion": "npm run linter && npm run test",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@twist/babel-plugin-transform": "0.1.0",
@@ -29,5 +31,8 @@
     "nyc": "^11.4.1",
     "react": "^16.0.0",
     "react-test-renderer": "^16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
