@@ -19,10 +19,19 @@ function camelCase(str) {
 
 function mergeStyleIntoObject(value, obj) {
     if (typeof value === 'string') {
-        value.split(';').forEach(function(item) {
-            const kv = item.split(':', 2);
-            if (kv.length === 2) {
-                obj[camelCase(kv[0].trim())] = kv[1].trim();
+        // NOTE: The implementation here is designed to facilitate legacy code that declares inline styles as strings;
+        // it does not implement the complete CSS parsing specification. In practice, this implementation covers nearly
+        // all cases, including "data:" URI values that would otherwise break when splitting on semicolons only. In the
+        // future, we could explore adding a compliant parser. We would need two variants: one that runs at
+        // compile-time, and one that is used in the browser. The browser implementation would be straightforward, using
+        // an element's style attribute as a conversion interface. For the compiler, as of this writing (Jan 2018), a
+        // cursory search doesn't reveal any lightweight more-compliant parsers; it's likely we'd need to use postcss.
+        value.split(/;(?!base64)/g).forEach(function(item) {
+            const colonIndex = item.indexOf(':');
+            if (colonIndex !== -1) {
+                const key = item.slice(0, colonIndex).trim();
+                const value = item.slice(colonIndex + 1).trim();
+                obj[camelCase(key)] = value;
             }
         });
     }
