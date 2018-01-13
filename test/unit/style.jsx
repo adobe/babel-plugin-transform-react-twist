@@ -80,4 +80,9 @@ describe('style', () => {
         'merging properties',
         <div style={{ fontSize: '10px' }} style={{ fontWeight: 'bold' }} />,
         { fontSize: '10px', fontWeight: 'bold' });
+
+    testStyle(
+        'parsing CSS with embedded colons and semicolons (data URI case)',
+        <div style="background: url(data:image/png;base64,abcde123456); color: red" />,
+        { background: 'url(data:image/png;base64,abcde123456)', color: 'red' });
 });
