@@ -57,6 +57,8 @@ module.exports = class BindAttributeTransform {
             return;
         }
 
+        let eventFunction = eventTemplate({ VAR: bindAttr.value.expression }).expression;
+
         // Whatever happens, we want to remove the bind attribute
         PathUtils.deleteAttribute(path, bindAttrName);
 
@@ -66,10 +68,15 @@ module.exports = class BindAttributeTransform {
                 choose either one-way or two-way data binding!`);
             return;
         }
+        // If they already had an onChange handler, make our event handler call theirs as well.
         if (PathUtils.getAttribute(path, eventName)) {
-            PathUtils.warning(path, `Cannot use ${eventName} in conjunction with ${bindAttrName} - you need to choose between
-                either manually handling the event, versus doing it automatically via two-way data binding.`);
-            return;
+            const existingHandler = PathUtils.getAttributeValue(path, eventName).expression;
+            if (t.isArrowFunctionExpression(existingHandler) && t.isAssignmentExpression(existingHandler.body)) {
+                PathUtils.warning(path, `It looks like you're using both ${bindAttrName} and ${eventName} to assign a value. `
+                    + `The 'bind:' attribute automatically adds an ${eventName} handler to save the value; doing both is redundant.`);
+            }
+            PathUtils.deleteAttribute(path, eventName);
+            eventFunction.body = t.sequenceExpression([ eventFunction.body, t.callExpression(existingHandler, eventFunction.params) ]);
         }
 
         // Check that it's an l-value (identifier or member expression)
@@ -86,7 +93,6 @@ module.exports = class BindAttributeTransform {
         attributes.push(t.jSXAttribute(t.jSXIdentifier(attrName), t.jSXExpressionContainer(bindAttr.value.expression)));
 
         // Add the event handler (data out)
-        attributes.push(t.jSXAttribute(t.jSXIdentifier(eventName),
-            t.jSXExpressionContainer(eventTemplate({ VAR: bindAttr.value.expression }).expression)));
+        attributes.push(t.jSXAttribute(t.jSXIdentifier(eventName), t.jSXExpressionContainer(eventFunction)));
     }
 };
