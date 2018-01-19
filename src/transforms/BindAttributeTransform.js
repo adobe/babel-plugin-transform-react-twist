@@ -26,7 +26,7 @@ module.exports = class BindAttributeTransform {
         const jsxName = PathUtils.getJSXElementName(path);
 
         // Check for certain special attributes on an input element (value, checked, indeterminate)
-        if (jsxName === 'input' || jsxName === 'textarea') {
+        if (jsxName === 'input') {
             let inputType = PathUtils.getAttributeValue(path, 'type');
             inputType = inputType && inputType.value;
 
@@ -40,7 +40,7 @@ module.exports = class BindAttributeTransform {
 
             // TODO: We don't handle indeterminate right now
         }
-        else if (jsxName === 'select') {
+        else if (jsxName === 'select' || jsxName === 'textarea') {
             this.transformBindAttr(path, 'value', 'onChange', valueTemplate);
         }
 
