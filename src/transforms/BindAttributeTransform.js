@@ -26,7 +26,7 @@ module.exports = class BindAttributeTransform {
         const jsxName = PathUtils.getJSXElementName(path);
 
         // Check for certain special attributes on an input element (value, checked, indeterminate)
-        if (jsxName === 'input') {
+        if (jsxName === 'input' || jsxName === 'textarea') {
             let inputType = PathUtils.getAttributeValue(path, 'type');
             inputType = inputType && inputType.value;
 
