@@ -5,6 +5,20 @@ export class NoArgs {
     }
 }
 
+@VirtualComponent
+export class NoArgsVirtual {
+    constructor() {
+        super();
+    }
+}
+
+@MyDecorator
+export class NoArgsNotComponent {
+    constructor() {
+        super();
+    }
+}
+
 @Component({ fork: true })
 export class NoArgsFork {
     constructor() {
