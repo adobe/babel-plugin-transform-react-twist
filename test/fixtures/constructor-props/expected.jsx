@@ -7,6 +7,20 @@ export class NoArgs extends _BaseComponent {
     }
 }
 
+@VirtualComponent
+export class NoArgsVirtual {
+    constructor(props, context) {
+        super(props, context);
+    }
+}
+
+@MyDecorator
+export class NoArgsNotComponent {
+    constructor() {
+        super();
+    }
+}
+
 @_Component({ fork: true })
 export class NoArgsFork extends _BaseComponent {
     constructor(props, context) {
