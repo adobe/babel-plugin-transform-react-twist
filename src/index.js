@@ -37,81 +37,78 @@ const OPTIONS = {
     moduleName: '@twist/babel-plugin-transform-react',
 };
 
-function normalizeOptions(opts = {}) {
-    return Object.assign({}, OPTIONS, opts);
-}
+module.exports = () => ({
+    visitor: {
+        Program(path, state) {
+            const options = state.opts = Object.assign({}, OPTIONS, state.opts);
+            // Any plugins which need to run first-ish (before common transpilations) need to traverse the Program
+            // node here. Otherwise, other plugins that run in-between these might lose some of the source-code
+            // context that we need to apply our own transformations (e.g. arrow functions becoming normal functions
+            // without accompanying AST information, or decorators being transpiled out).
+            // Since we're a layer on top of several ES6 features, we'll just run everything here first.
+            path.traverse(programVisitor(path, state, options), state);
+        }
+    }
+});
 
-module.exports = () => {
-    return {
-        visitor: {
-            Program(path, state) {
-                const options = state.opts = normalizeOptions(state.opts);
-                new DecoratorImportTransform(options.autoImport).traverseProgram(path);
-            },
 
-            ClassDeclaration(path, state) {
-                // Note: We can't do this on ClassMethod, because the ES5 class transform will get rid of those before we get there!
-                const options = state.opts = normalizeOptions(state.opts);
+const programVisitor = (path, state, options) => ({
 
-                // Traverse through the class properties (start at the first property and iterate)
-                let property = path.get('body.body.0');
-                while (property && property.node) {
-                    if (options.constructorProps) {
-                        ConstructorPropsTransform.apply(property, state);
-                    }
+    ['ClassExpression|ClassDeclaration|ClassProperty|Method'](path) {
+        const decoratorTransform = new DecoratorImportTransform(options.autoImport);
+        decoratorTransform.apply(path);
+    },
 
-                    property = property.getSibling(property.key + 1);
-                }
-            },
+    ClassMethod(path, state) {
+        if (options.constructorProps) {
+            ConstructorPropsTransform.apply(path, state);
+        }
+    },
 
-            JSXElement(path, state) {
-                const options = state.opts = normalizeOptions(state.opts);
+    JSXElement(path, state) {
+        if (options.styleAttribute) {
+            StyleAttributeTransform.apply(path, state);
+        }
 
-                if (options.styleAttribute) {
-                    StyleAttributeTransform.apply(path, state);
-                }
+        if (options.classAttribute) {
+            ClassAttributeTransform.apply(path, state);
+        }
 
-                if (options.classAttribute) {
-                    ClassAttributeTransform.apply(path, state);
-                }
+        if (options.refAttribute) {
+            RefAttributeTransform.apply(path, state);
+        }
 
-                if (options.refAttribute) {
-                    RefAttributeTransform.apply(path, state);
-                }
+        if (options.bindAttribute) {
+            BindAttributeTransform.apply(path, state);
+        }
 
-                if (options.bindAttribute) {
-                    BindAttributeTransform.apply(path, state);
-                }
+        if (options.arrowLifting) {
+            ArrowLiftingTransform.apply(path, state);
+        }
 
-                if (options.arrowLifting) {
-                    ArrowLiftingTransform.apply(path, state);
-                }
+        if (options.autoImport) {
+            new ComponentImportTransform(options.autoImport).apply(path, state);
+        }
 
-                if (options.autoImport) {
-                    new ComponentImportTransform(options.autoImport).apply(path, state);
-                }
-
-                // This must go after auto-import, because we only hoist children that aren't already imported
-                if (options.namedChildren) {
-                    if (NamedChildrenTransform.apply(path, state)) {
-                        // If we hoist the element, don't continue!
-                        return;
-                    }
-                }
-
-                // This must go last, because it might transform the element into something else.
-                let transformedControlFlow = false;
-                if (options.controlFlow) {
-                    transformedControlFlow = ControlFlowTransform.apply(path, state);
-                }
-
-                // Handles 'as' on a normal component (converting children to a function). Note that this
-                // has to happen after the control flow transform, because 'as' on a repeat/using is treated
-                // differently.
-                if (!transformedControlFlow && options.asAttribute) {
-                    AsAttributeTransform.apply(path, state);
-                }
+        // This must go after auto-import, because we only hoist children that aren't already imported
+        if (options.namedChildren) {
+            if (NamedChildrenTransform.apply(path, state)) {
+                // If we hoist the element, don't continue!
+                return;
             }
         }
-    };
-};
+
+        // This must go last, because it might transform the element into something else.
+        let transformedControlFlow = false;
+        if (options.controlFlow) {
+            transformedControlFlow = ControlFlowTransform.apply(path, state);
+        }
+
+        // Handles 'as' on a normal component (converting children to a function). Note that this
+        // has to happen after the control flow transform, because 'as' on a repeat/using is treated
+        // differently.
+        if (!transformedControlFlow && options.asAttribute) {
+            AsAttributeTransform.apply(path, state);
+        }
+    }
+});
