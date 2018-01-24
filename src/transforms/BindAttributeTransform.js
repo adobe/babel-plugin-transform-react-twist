@@ -40,7 +40,7 @@ module.exports = class BindAttributeTransform {
 
             // TODO: We don't handle indeterminate right now
         }
-        else if (jsxName === 'select') {
+        else if (jsxName === 'select' || jsxName === 'textarea') {
             this.transformBindAttr(path, 'value', 'onChange', valueTemplate);
         }
 
