@@ -24,8 +24,9 @@ module.exports = class ConstructorPropsTransform {
             return;
         }
 
-        // Abort if this class isn't decorated with @Component.
-        const classDeclaration = PathUtils.findParentClassWithDecorator(path, 'Component');
+        // Abort if this class isn't decorated with @Component or @VirtualComponent
+        let classDeclaration = PathUtils.findParentClassWithDecorator(path, 'Component');
+        classDeclaration = classDeclaration || PathUtils.findParentClassWithDecorator(path, 'VirtualComponent');
         if (!classDeclaration) {
             return;
         }
