@@ -43,24 +43,24 @@ function _interopRequireDefault(obj) {
 // The following must require the runtime transform:
 <div style={_S(`some: ${interpolated}-template-string`)} />;
 <div
+  { ...spreadArray }
   style={_S({
     color: 'white',
     'fontWeight': someJsExpression
-  }, spreadArray.style || {})}
-  { ...spreadArray } />;
+  }, spreadArray.style || {})} />;
 <div style={_S(opaqueMaybeString)} />;
 <div
-  style={_S(spread1.style || {}, spread2.style || {})}
   {...spread1}
   {...spread2}
+  style={_S(spread1.style || {}, spread2.style || {})}
   className={_C([ spread1.className || '', spread2.className || '' ])} />;
 
 // Spread attributes must retain left-to-right evaluation order when they might include styles.
 // i.e. the resulting runtime must include s1, s2, s3, s4, s5 as arguments in order.
 <div
+  {...s2}
+  {...s4}
   style={_S({
     '1': s1
   }, s2.style || {}, s3, s4.style || {}, s5)}
-  {...s2}
-  {...s4}
   className={_C([ s2.className || '', s4.className || '' ])} />;
