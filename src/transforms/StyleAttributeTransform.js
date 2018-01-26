@@ -76,9 +76,10 @@ module.exports = class StyleAttributeTransform {
             ? styleItems[0].value
             : t.callExpression(PathUtils.addImportOnce(path, 'default', runtimeModule, { nameHint: 'S' }), styleItems.map(s => s.value));
 
-        // Insert the new style attribute in the same position as the first original style attribute.
-        attributes.splice(styleItems[0].index, 0,
-            t.jSXAttribute(t.jSXIdentifier('style'), t.jSXExpressionContainer(value)));
+        // We insert the new (computed) style attribute at the end - it's important that it comes at the end because we don't
+        // want any spreads to override our computed style attribute. (Technically if there are no spreads, it would be safe to
+        // insert it earlier, but we'll just put it at the end for consistency).
+        attributes.push(t.jSXAttribute(t.jSXIdentifier('style'), t.jSXExpressionContainer(value)));
     }
 };
 
