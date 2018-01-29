@@ -44,10 +44,17 @@ function mergeStyleIntoObject(value, obj) {
 
 /**
  * Merge all arguments into one style object. Strings are converted to style objects; object keys are camelCased.
+ * If only one string was provided, and it doesn't look like a CSS string, we'll return the string directly.
  * @param {...string|object} values
- * @return {object}
+ * @return {object|string}
  */
 module.exports = function styles(...values) {
+    // Special case: If only one value was provided, and it doesn't look like a CSS string, we'll assume that it's
+    // a custom attribute, and pass it through as a string directly.
+    // (e.g. react-intl, which uses style="somestring" in a non-CSS context)
+    if (values.length === 1 && typeof values[0] === 'string' && values[0].indexOf(':') === -1) {
+        return values[0];
+    }
     let resultObject = {};
     for (let i = 0, len = values.length; i < len; i++) {
         mergeStyleIntoObject(values[i], resultObject);
