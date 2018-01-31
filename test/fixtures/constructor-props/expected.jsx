@@ -14,6 +14,13 @@ export class NoArgsVirtual {
     }
 }
 
+@LayoutComponent
+export class NoArgsLayout {
+    constructor(props, context) {
+        super(props, context);
+    }
+}
+
 @MyDecorator
 export class NoArgsNotComponent {
     constructor() {
