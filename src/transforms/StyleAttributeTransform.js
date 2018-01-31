@@ -70,16 +70,16 @@ module.exports = class StyleAttributeTransform {
             }
         }
 
-        // If only one object-literal style item is left, we can just include a style attribute with that object.
+        // If only one object or string item is left, we can just include a style attribute with that object.
         // Otherwise, we need the runtime transform to combine the style items.
-        const value = styleItems.length === 1 && t.isObjectExpression(styleItems[0].value)
+        const value = styleItems.length === 1 && (t.isObjectExpression(styleItems[0].value) || t.isStringLiteral(styleItems[0].value))
             ? styleItems[0].value
             : t.callExpression(PathUtils.addImportOnce(path, 'default', runtimeModule, { nameHint: 'S' }), styleItems.map(s => s.value));
 
         // We insert the new (computed) style attribute at the end - it's important that it comes at the end because we don't
         // want any spreads to override our computed style attribute. (Technically if there are no spreads, it would be safe to
         // insert it earlier, but we'll just put it at the end for consistency).
-        attributes.push(t.jSXAttribute(t.jSXIdentifier('style'), t.jSXExpressionContainer(value)));
+        attributes.push(t.jSXAttribute(t.jSXIdentifier('style'), t.isStringLiteral(value) ? value : t.jSXExpressionContainer(value)));
     }
 };
 
@@ -167,6 +167,10 @@ class StyleItem {
         }
         const properties = [];
         const obj = styles(s);
+        // If `styles(s)` returned a string, it didn't look like a CSS string, so we'll pass it through as a string.
+        if (typeof obj === 'string') {
+            return t.stringLiteral(obj);
+        }
         for (let key in obj) {
             properties.push(t.objectProperty(t.stringLiteral(key), t.stringLiteral(obj[key].trim())));
         }

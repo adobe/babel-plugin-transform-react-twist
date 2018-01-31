@@ -39,6 +39,7 @@ function _interopRequireDefault(obj) {
 // The following should remain unchanged:
 <div style={{ foo: bar }} />;
 <div { ...spreadArrayRemainsUnchanged } />;
+<div style='invalid-style-string' />;
 
 // The following must require the runtime transform:
 <div style={_S(`some: ${interpolated}-template-string`)} />;

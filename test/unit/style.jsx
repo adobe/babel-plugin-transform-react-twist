@@ -87,6 +87,15 @@ describe('style', () => {
         { color: 'blue', fontSize: '10px', fontWeight: 'bold' });
 
     testStyle(
+        'invalid style attribute gets passed through (compile-time)',
+        <div style="invalid-style" />, 'invalid-style');
+
+    const invalidStyle = 'invalid-style';
+    testStyle(
+        'invalid style attribute gets passed through (runtime)',
+        <div style={invalidStyle} />, 'invalid-style');
+
+    testStyle(
         'parsing CSS with embedded colons and semicolons (data URI case)',
         <div style="background: url(data:image/png;base64,abcde123456); color: red" />,
         { background: 'url(data:image/png;base64,abcde123456)', color: 'red' });
