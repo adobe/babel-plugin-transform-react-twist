@@ -36,9 +36,17 @@ class X {
         let x = 2;
         return <button onClick={ ev => this.handle(x) } onKeyPress={ this[_handler7] }>Button</button>;
     }
+    test4() {
+        function f() {
+            <button onClick={ ev => handle() }>Button 1</button>;
+        }
+    }
 }
 
 if (true) {
     <button onClick={ ev => handle() }>Button 1</button>
     let fn = () => <button onClick={ ev => handle() }>Button 2</button>;
+    function f() {
+        <button onClick={ ev => handle() }>Button 1</button>;
+    }
 }
