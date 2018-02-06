@@ -15,12 +15,13 @@ const t = require('babel-types');
 const template = require('babel-template');
 const LiftingTransform = require('./LiftingTransform');
 
-const hoistTemplate = template(`this[NAME] = this[NAME] || EXPR;`);
-const replaceTemplate = template(`this[NAME]`);
+const isSimpleObjectLiteral = expr => t.isObjectExpression(expr) && expr.properties.every(t.isObjectProperty);
+const hoistTemplate = template(`this[NAME] = this[NAME] || {};`);
+const replaceTemplate = template(`Object.assign(this[NAME], EXPR)`);
 
 /**
- * Detect attributes that have arrow functions, and lift them to the parent block
- * This ensures that we only create the closure for the event handler once (which is
- * more efficient than having the event handler be recreated on every render).
+ * Detect attributes that have object literals, and lift them to the parent block
+ * This ensures that we only create a single object and update it on each render(),
+ * rather than constantly creating a new object (which looks like the prop is changing each time).
  */
-module.exports = new LiftingTransform(t.isArrowFunctionExpression, hoistTemplate, replaceTemplate);
+module.exports = new LiftingTransform(isSimpleObjectLiteral, hoistTemplate, replaceTemplate);
