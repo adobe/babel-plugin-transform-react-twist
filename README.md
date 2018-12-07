@@ -1,6 +1,6 @@
 # babel-plugin-transform-react-twist
 
-[![Build Status](https://travis-ci.org/adobe/babel-plugin-transform-react-twist.svg?branch=master)](https://travis-ci.org/adobe/babel-plugin-transform-react-twist)
+[![Build Status](https://travis-ci.org/adobe/babel-plugin-transform-react-twist.svg?branch=master)](https://travis-ci.org/adobe/babel-plugin-transform-react-twist) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/babel-plugin-transform-react-twist.svg)](https://greenkeeper.io/)
 
 This babel plugin enhances React-compatible JSX with additional features, including structural components, style and class attribute shorthands, and shorthand for two-way data binding. This is intended to be used as part of [React-Twist](https://github.com/adobe/react-twist), but it can also be used as a standalone Babel plugin with React.
 
