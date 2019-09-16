@@ -23,7 +23,7 @@ The plugin options are as follows. If you're using this as part of React-Twist, 
     styleAttribute: true,    // Support style-backround-color={ ... } syntax, and multiple style attributes.
     classAttribute: true,    // Support class-selected={ this.isSelected } syntax, and multiple class attributes.
     controlFlow: true,       // Support structural JSX components: <if>, <else>, <elseif>, <unless>, <repeat>, <using>
-    namedChildren: true,     // Support named children, e.g. <Dialog><dialog:header>My Header</dialog:header>{ contents }</Dialog>
+    namedChildren: true,     // Support named children, e.g. <Dialog><Dialog:header>My Header</Dialog:header>{ contents }</Dialog>
     asAttribute: true,       // Support the "as" attribute as a means of providing parameters via JSX (e.g. <route:provider as={route}>...)
     bindAttribute: true,     // Support bind:value={ this.value } as a shorthand for adding an event listener to update this.value.
     arrowLifting: true,      // Automatically lift arrow functions in JSX, so they don't get recreated every time the component is rendered.
@@ -176,9 +176,9 @@ such as large blocks of content, headers, footers, etc. For instance:
 
 ```jsx
 <Dialog>
-    <dialog:header as={ title }><h1>Header { title }</h1></dialog:header>
+    <Dialog:header as={ title }><h1>Header { title }</h1></Dialog:header>
     Contents
-    <dialog:footer><div>Footer</div></dialog:footer>
+    <Dialog:footer><div>Footer</div></Dialog:footer>
 </Dialog>
 ```
 
