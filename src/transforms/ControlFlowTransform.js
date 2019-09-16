@@ -27,6 +27,9 @@ module.exports = class ControlFlowTransform {
             // We handle elseif/else cases within the if/unless blocks. Just remove them here.
             path.remove();
             break;
+        case 'switch':
+            this.transformSwitch(path);
+            break;
         case 'repeat':
             this.transformRepeat(path);
             break;
@@ -77,6 +80,49 @@ module.exports = class ControlFlowTransform {
         const expr = cases.reduceRight((expr, { condition, children }) => {
             return t.conditionalExpression(condition, children, expr);
         }, PathUtils.jsxChildrenToJS(elsePath && elsePath.node.children));
+
+        path.replaceWith(PathUtils.maybeWrapJSXExpression(path, expr));
+    }
+
+    static transformSwitch(path) {
+        // Find the child `case` and/or `default` blocks. If we encounter any other JSXElement, stop searching.
+        let defaultNode;
+        let caseNodes = [ ];
+        const children = path.node.children;
+        let i = 0;
+        for (let childNode; (childNode = children[i]) && childNode; i++) {
+            if (childNode.type === 'JSXElement') {
+                const name = PathUtils.getJSXElementName({ node: childNode });
+                if (name === 'case') {
+                    caseNodes.push(childNode);
+                }
+                else if (name === 'default') {
+                    defaultNode = childNode;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
+        // Get the condition expression, and the children values//contents, for each case.
+        const condition = PathUtils.getAttributeValue(path, 'condition').expression;
+        const cases = caseNodes.map((node) => {
+            let value = PathUtils.getAttributeValue({ node }, 'value').expression;
+            return {
+                value,
+                children: PathUtils.jsxChildrenToJS(node.children)
+            };
+        });
+
+        // Merge the cases into a JS expression.
+        const arrowFunction = t.arrowFunctionExpression([ ], t.blockStatement([
+            t.switchStatement(condition, cases.map(({ value, children }) => {
+                return t.switchCase(value, [ t.returnStatement(children) ]);
+            })),
+            t.returnStatement(defaultNode ? PathUtils.jsxChildrenToJS(defaultNode.children) : t.nullLiteral())
+        ]));
+        const expr = t.callExpression(arrowFunction, [ ]);
 
         path.replaceWith(PathUtils.maybeWrapJSXExpression(path, expr));
     }

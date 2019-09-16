@@ -22,7 +22,7 @@ The plugin options are as follows. If you're using this as part of React-Twist, 
     constructorProps: true,  // Add props,context to super() call.
     styleAttribute: true,    // Support style-backround-color={ ... } syntax, and multiple style attributes.
     classAttribute: true,    // Support class-selected={ this.isSelected } syntax, and multiple class attributes.
-    controlFlow: true,       // Support structural JSX components: <if>, <else>, <elseif>, <unless>, <repeat>, <using>
+    controlFlow: true,       // Support structural JSX components: <if>, <else>, <elseif>, <unless>, <switch>, <case>, <default>, <repeat>, <using>
     namedChildren: true,     // Support named children, e.g. <Dialog><dialog:header>My Header</dialog:header>{ contents }</Dialog>
     asAttribute: true,       // Support the "as" attribute as a means of providing parameters via JSX (e.g. <route:provider as={route}>...)
     bindAttribute: true,     // Support bind:value={ this.value } as a shorthand for adding an event listener to update this.value.
@@ -32,7 +32,7 @@ The plugin options are as follows. If you're using this as part of React-Twist, 
 
 ### Structural Components
 
-React-Twist provides a set of *structural components* that allow you to write more declarative JSX, to describe the rendering of a component. These structural components, such as `<if>`, `<repeat>`, and `<using>`, provide basic control-flow constructs. Right now these map onto fairly basic JavaScript equivalents, but we'll be adding further optimizations to React-Twist in the future (e.g. automatically creating sub-components to improve rendering performance).
+React-Twist provides a set of *structural components* that allow you to write more declarative JSX, to describe the rendering of a component. These structural components, such as `<if>`, `<switch>`, `<repeat>`, and `<using>`, provide basic control-flow constructs. Right now these map onto fairly basic JavaScript equivalents, but we'll be adding further optimizations to React-Twist in the future (e.g. automatically creating sub-components to improve rendering performance).
 
 As an example, consider the following render function:
 
@@ -85,6 +85,19 @@ Some more examples of the syntax:
 <else>
     :wave:
 </else>
+
+// Use switch/case/default:
+<switch condition={status}>
+    <case value={'on'}>
+        on
+    </case>
+    <case value={'off'}>
+        off
+    </case>
+    <default>
+        unknown
+    </default>
+</switch>
 
 // Iterate over items in a collection:
 <repeat for={item in collection}>
