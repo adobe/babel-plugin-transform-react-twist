@@ -18,19 +18,19 @@ module.exports = class NamedChildrenTransform {
     static apply(path) {
         t.assertJSXElement(path.node);
         const nameRoot = path.node.openingElement.name;
-        if (!nameRoot.namespace || !t.isJSXElement(path.parent)) {
-            // Only hoist namespaced elements, and only if the parent is a JSX element
+        if (!nameRoot.namespace || !t.isJSXElement(path.parent) || path.parent.openingElement.name.name !== nameRoot.namespace.name) {
+            // Only hoist namespaced elements, and only if the parent is a JSX element, and only if namespace is the same as parent tag name
             return false;
         }
 
-        let attrName = nameRoot.namespace.name + '_' + nameRoot.name.name;
+        let attrName = nameRoot.namespace.name.toLowerCase() + '_' + nameRoot.name.name;
         let parentAttrs = path.parent.openingElement.attributes;
 
         // Check to see if we need to convert to a function
         let attrValue = PathUtils.jsxChildrenToJS(path.node.children);
         const args = PathUtils.stripAsIdentifiers(path);
         if (args && attrValue) {
-            // Convert <dialog:title as={ x }>...</dialog:title> to a function: (x) => ...
+            // Convert <Dialog:title as={ x }>...</Dialog:title> to a function: (x) => ...
             attrValue = t.arrowFunctionExpression(args, attrValue);
         }
 
