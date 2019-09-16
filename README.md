@@ -178,7 +178,7 @@ such as large blocks of content, headers, footers, etc. For instance:
 <Dialog>
     <dialog:header as={ title }><h1>Header { title }</h1></dialog:header>
     Contents
-    <dialog:footer><div>Footer</div></dialog:footer>
+    <dialog:footer name="Footer"><div>Footer</div></dialog:footer>
 </Dialog>
 ```
 
@@ -186,7 +186,7 @@ To make that possible, we pass any namespaced children along as attributes. The 
 pure React code:
 
 ```jsx
-<Dialog dialog_header={ title => <h1>Header { title }</h1> } dialog_footer={ <div>Footer</div> } >
+<Dialog header={ title => <h1>Header { title }</h1> } Footer={ <div>Footer</div> } >
     Contents
 </Dialog>
 ```
